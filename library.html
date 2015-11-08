@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+<article xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
     <div class="row">
         <div class="col-md-8">
             <div class="page-header">
@@ -8,9 +8,9 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-4" data-template="app:cards">
             <h2>The Card Drawer</h2>
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs" data-template="app:cardholders">
                 <li role="presentation" class="active">
                     <a href="#">A</a>
                 </li>
@@ -90,28 +90,9 @@
                     <a href="#">Z</a>
                 </li>
             </ul>
-            <section>
-                <ol>
-                    <li>
-                        <a href="#">Alderman</a>
-                    </li>
-                    <li>
-                        <a href="#">Aldington</a>
-                    </li>
-                    <li>
-                        <a href="#">Aragon</a>
-                    </li>
-                    <li>
-                        <a href="#">Arnavon</a>
-                    </li>
-                    <li>
-                        <a href="#">Auger</a>
-                    </li>
-                </ol>
-            </section>
         </div>
         <div class="col-md-8">
             <h2>Subscriber Card Viewer</h2>
         </div>
     </div>
-</div>
+</article>
