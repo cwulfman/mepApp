@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <header>
+        <h1>Dashboard</h1>
+    </header>
+    <section class="row">
+        <header>
+            <h2>Personography Stats</h2>
+        </header>
+        <div class="col-md-6">
+            <header>
+                <h3>Male and Female Readers</h3>
+                <p>From the personography database, the numbers of
+                library patrons whose sex MEP has identified.</p>
+            </header>
+            <table class="table" data-template="app:sex-distribution">
+                <caption>
+                    <p>Sex Distribution</p>
+                </caption>
+                <thead>
+                    <tr>
+                        <th>Sex</th>
+                        <th>Number of Individuals</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Female</td>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <td>Male</td>
+                        <td>50</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <header>
+                <h3>Distribution of Nationalities</h3>
+                <p>From the personography database, the
+                nationalities represented in the subcriber base.
+                Some subscribers had more than one nationality.</p>
+            </header>
+            <table data-template="app:national-distribution">
+                <caption>
+                    <p>Distribution of Nationalities</p>
+                </caption>
+            </table>
+        </div>
+    </section>
+</article>

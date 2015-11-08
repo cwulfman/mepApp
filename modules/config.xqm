@@ -29,7 +29,9 @@ declare variable $config:app-root :=
         substring-before($modulePath, "/modules")
 ;
 
-declare variable $config:data-root := $config:app-root || "/data";
+declare variable $config:data-root  := "/db/mep-data";
+declare variable $config:female-key := '2';
+declare variable $config:male-key   := '1';
 
 declare variable $config:repo-descriptor := doc(concat($config:app-root, "/repo.xml"))/repo:meta;
 
