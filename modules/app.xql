@@ -79,7 +79,7 @@ declare %templates:wrap function app:cards($node as node(), $model as map(*))
     return map { "cards" : $cards }
 };
 
-declare %templates:wrap function app:current-card($node as node(), $model as map(*), $subscriber as xs:string)
+declare %templates:wrap function app:current-card($node as node(), $model as map(*), $subscriber as xs:string?)
 {
     let $key  := 
         if ($subscriber) then "#"||$subscriber
