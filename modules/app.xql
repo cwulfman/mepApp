@@ -160,6 +160,7 @@ declare %templates:wrap function app:expat-info($node as node(), $model as map(*
 {
     let $expat := $model('current-expat')
     return
+        if ($expat) then
         <section>
             <header>
                 <h3>{ 
@@ -243,6 +244,7 @@ declare %templates:wrap function app:expat-info($node as node(), $model as map(*
                 }</dd>
             </dl>
         </section>
+        else ()
 };
 
 
