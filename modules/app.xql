@@ -75,7 +75,7 @@ declare %templates:wrap function app:national-distribution($node as node(), $mod
 
 declare %templates:wrap function app:cards($node as node(), $model as map(*))
 {
-    let $cards := collection('/db/mep-data/transcriptions')//tei:TEI[tei:teiHeader//tei:classCode='300026802']
+    let $cards := collection($config:data-root)//tei:TEI[tei:teiHeader//tei:classCode='300026802']
     return map { "cards" : $cards }
 };
 
@@ -87,7 +87,7 @@ declare %templates:wrap function app:current-card($node as node(), $model as map
         
     let $card :=
         if ($key) then
-            collection('/db/mep-data/transcriptions')//tei:TEI[tei:teiHeader//tei:particDesc/tei:person/@ana = $key]
+            collection($config:data-root)//tei:TEI[tei:teiHeader//tei:particDesc/tei:person/@ana = $key]
         else ()
     return
         if ($card) then
@@ -104,7 +104,7 @@ declare %templates:wrap function app:cardholders($node as node(), $model as map(
     let $key    := $person[1]/@ana
     let $key    := fn:replace($key, "^#?(.*)$", "$1")
     let $link   := 'library.html?subscriber=' || $key
-        
+    order by tokenize($label, ' ')[last()]
     return
         <li><a href="{$link}">{ $label }</a></li>
     }</ul>
@@ -120,3 +120,134 @@ declare function app:view-card($node as node(), $model as map(*))
             transform:transform($card, $xsl, ())
         else ()
 };
+
+declare %templates:wrap function app:expats($node as node(), $model as map(*))
+{
+    let $expats := collection($config:data-root)//tei:listPerson[@xml:id='expats']/tei:person
+    return map { "expats" : $expats }
+};
+
+declare %templates:wrap function app:expats-list($node as node(), $model as map(*))
+{
+    let $expats := $model('expats')
+    return
+        <ol id="expats">{
+            for $person in $expats
+            let $surname  := $person/tei:persName[1]/tei:surname[1]
+            let $forename := $person/tei:persName[1]/tei:forename[1]
+            let $lifespan := $person/tei:birth || '--' || $person/tei:death
+            let $key      := $person/@xml:id
+            let $link     := "expats.html?person=" || $key
+            order by $surname
+            return
+                <li><a href="{$link}">
+                    { string-join(($forename, $surname), ' ') }
+                </a></li>
+        }</ol>
+};
+
+declare %templates:wrap function app:expat($node as node(), $model as map(*), $person as xs:string?)
+{
+    let $expat := 
+        if ($person) then
+            collection($config:data-root)//tei:listPerson[@xml:id='expats']/tei:person[@xml:id = $person]
+        else ()
+        
+        return map { 'current-expat' : $expat }
+};
+
+declare %templates:wrap function app:expat-info($node as node(), $model as map(*))
+{
+    let $expat := $model('current-expat')
+    return
+        <section>
+            <header>
+                <h3>{ 
+                    let $namestring := $expat/tei:persName/tei:surname[1] || ', ' || $expat/tei:persName/tei:forename[1] 
+                    return $namestring
+                }</h3>
+            </header>
+            <dl class="dl-horizontal">
+                <dt>viaf</dt>
+                <dd>{ 
+                    let $viafnum := $expat/tei:idno[@type='viaf']
+                    let $link    := 'http://viaf.org/viaf/' || $viafnum
+                    return
+                    <a href="{$link}">{ $viafnum }</a>                
+                }</dd>
+                
+                <dt>birth</dt>
+                <dd>{ $expat/tei:birth }</dd>
+                
+                <dt>death</dt>
+                <dd>{ $expat/tei:death }</dd>
+                
+                <dt>identified sex</dt>
+                <dd>{ 
+                    let $sex-key := $expat/tei:sex/@value
+                    return
+                        if ($sex-key = $config:female-key) then "female"
+                        else if ($sex-key = $config:male-key) then "male"
+                        else "unestablished"
+                }</dd>
+                
+                <dt>identified nationality</dt>
+                <dd><ul class="list-inline">
+                    {
+                        for $nationality in $expat/tei:nationality
+                        return <li>{ xs:string($nationality/@key) }</li>
+                    }
+                </ul></dd>
+                
+                <dt>known addresses</dt>
+                <dd>{
+                    let $residences := $expat/tei:residence
+                    return
+                        <ul class="list-unstyled">
+                        { 
+                            for $residence in $residences return <li>{ $residence }</li>
+                        }
+                        </ul>
+                }</dd>
+                
+                <dt>books on card</dt>
+                <dd>{
+                        let $key  := 
+                            if ($expat) then "#"||$expat/@xml:id
+                            else ""
+        
+                        let $card :=
+                            if ($key) then
+                            collection($config:data-root)//tei:TEI[tei:teiHeader//tei:particDesc/tei:person/@ana = $key]
+                            else ()
+                            
+                        let $bibls :=
+                            if ($card) then
+                                $card//tei:bibl
+                            else ()
+                            
+                        let $titles :=
+                            for $bibl in $bibls
+                            return
+                                if ($bibl/tei:title) then xs:string($bibl/tei:title)
+                                else xs:string($bibl)
+                        return
+                            
+                            <ul>
+                                {
+                                    for $title in distinct-values($titles)
+                                    return <li>{ $title }</li>
+                                }
+                            </ul>
+                            
+                }</dd>
+            </dl>
+        </section>
+};
+
+
+
+
+
+
+
