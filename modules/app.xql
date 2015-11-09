@@ -73,18 +73,50 @@ declare %templates:wrap function app:national-distribution($node as node(), $mod
     
 };
 
-declare function app:cards($node as node(), $model as map(*))
+declare %templates:wrap function app:cards($node as node(), $model as map(*))
 {
     let $cards := collection('/db/mep-data/transcriptions')//tei:TEI[tei:teiHeader//tei:classCode='300026802']
     return map { "cards" : $cards }
 };
 
-declare   %templates:wrap function app:cardholders($node as node(), $model as map(*))
+declare %templates:wrap function app:current-card($node as node(), $model as map(*), $subscriber as xs:string)
+{
+    let $key  := 
+        if ($subscriber) then "#"||$subscriber
+        else ""
+        
+    let $card :=
+        if ($key) then
+            collection('/db/mep-data/transcriptions')//tei:TEI[tei:teiHeader//tei:particDesc/tei:person/@ana = $key]
+        else ()
+    return
+        if ($card) then
+            map { "current-card" : $card }
+        else ()
+};
+
+declare %templates:wrap function app:cardholders($node as node(), $model as map(*))
 {
     <ul> {
     for $card in $model('cards')
     let $person := $card/tei:teiHeader//tei:particDesc/tei:person[@role = 'cardholder']
+    let $label  := xs:string($person[1]/tei:persName)
+    let $key    := $person[1]/@ana
+    let $key    := fn:replace($key, "^#?(.*)$", "$1")
+    let $link   := 'library.html?subscriber=' || $key
+        
     return
-        <li>{ $person }</li>
+        <li><a href="{$link}">{ $label }</a></li>
     }</ul>
+};
+
+declare function app:view-card($node as node(), $model as map(*))
+{
+    let $card := $model('current-card')
+    let $xsl  := doc($config:app-root || "/resources/xsl/cardview.xsl")
+
+    return 
+        if ($card) then
+            transform:transform($card, $xsl, ())
+        else ()
 };

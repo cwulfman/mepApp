@@ -1,98 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <article xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="page-header">
-                <h1>The Lending Library at Shakespeare &amp; Company</h1>
+    <header>
+        <h1>The Lending Library at Shakespeare &amp; Company</h1>
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4" data-template="app:cards">
+                <header>
+                    <h2>The Card Drawer</h2>
+                </header>
+                <ul class="nav nav-tabs" data-template="app:cardholders">
+                    <li role="presentation" class="active">
+                        <a href="#">A</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">B</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">C</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">D</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">E</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">F</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">G</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">H</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">I</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">J</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">K</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">L</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">M</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">N</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">O</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">P</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">Q</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">R</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">S</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">T</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">U</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">V</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">W</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">X</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">Y</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">Z</a>
+                    </li>
+                </ul>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4" data-template="app:cards">
-            <h2>The Card Drawer</h2>
-            <ul class="nav nav-tabs" data-template="app:cardholders">
-                <li role="presentation" class="active">
-                    <a href="#">A</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">B</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">C</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">D</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">E</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">F</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">G</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">H</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">I</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">J</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">K</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">L</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">M</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">N</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">O</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">P</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">Q</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">R</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">S</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">T</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">U</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">V</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">W</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">X</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">Y</a>
-                </li>
-                <li role="presentation">
-                    <a href="#">Z</a>
-                </li>
-            </ul>
-        </div>
-        <div class="col-md-8">
-            <h2>Subscriber Card Viewer</h2>
+            <div class="col-md-8">
+                <header>
+                    <h2>Subscriber Card Viewer</h2>
+                </header>
+                <div data-template="app:current-card">
+                    <div id="viewer" data-template="app:view-card"/>
+                </div>
+            </div>
         </div>
     </div>
 </article>
