@@ -103,7 +103,7 @@ declare %templates:wrap function app:cardholders($node as node(), $model as map(
     let $label  := xs:string($person[1]/tei:persName)
     let $key    := $person[1]/@ana
     let $key    := fn:replace($key, "^#?(.*)$", "$1")
-    let $link   := 'library.html?subscriber=' || $key
+    let $link   := 'cards.html?subscriber=' || $key
     order by tokenize($label, ' ')[last()]
     return
         <li><a href="{$link}">{ $label }</a></li>
@@ -119,6 +119,14 @@ declare function app:view-card($node as node(), $model as map(*))
         if ($card) then
             transform:transform($card, $xsl, ())
         else ()
+};
+
+declare function app:view-notebook($node as node(), $model as map(*))
+{
+    let $notebook := doc($config:data-root || "/transcriptions/notebook.xml")
+    let $xsl      := doc($config:app-root || "/resources/xsl/notebookview.xsl")
+    
+    return transform:transform($notebook, $xsl, ())
 };
 
 declare %templates:wrap function app:expats($node as node(), $model as map(*))

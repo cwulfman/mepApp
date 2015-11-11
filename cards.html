@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <article xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
     <header>
-        <h1>The Lending Library at Shakespeare &amp; Company</h1>
+        <h1>The Card Drawer at Shakespeare &amp; Company</h1>
     </header>
     <div class="container">
+        <header>
+            <p>The Sylvia Beach Archive contains many of the cards Beach used
+            to track the borrowing activity of her subscribers. To see images of
+            a subscriber's card and a transcription, select a name from the list below.</p>
+        </header>
         <div class="row">
             <div class="col-md-3" data-template="app:cards">
-                <header>
-                    <h2>The Card Drawer</h2>
-                </header>
                 <ul class="nav nav-tabs" data-template="app:cardholders">
                     <li role="presentation" class="active">
                         <a href="#">A</a>
@@ -91,9 +93,6 @@
                 </ul>
             </div>
             <div class="col-md-9">
-                <header>
-                    <h2>Subscriber Card Viewer</h2>
-                </header>
                 <div data-template="app:current-card">
                     <div id="viewer" data-template="app:view-card"/>
                 </div>
