@@ -129,6 +129,15 @@ declare function app:view-notebook($node as node(), $model as map(*))
     return transform:transform($notebook, $xsl, ())
 };
 
+declare function app:view-logbooks($node as node(), $model as map(*))
+{
+    let $logbook := doc($config:data-root || "/transcriptions/logbook-1919.xml")
+    let $xsl      := doc($config:app-root || "/resources/xsl/logbookview.xsl")
+    
+    return transform:transform($logbook, $xsl, ())
+};
+
+
 declare %templates:wrap function app:expats($node as node(), $model as map(*))
 {
     let $expats := collection($config:data-root)//tei:listPerson[@xml:id='expats']/tei:person
