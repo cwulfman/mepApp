@@ -131,10 +131,11 @@ declare function app:view-notebook($node as node(), $model as map(*))
 
 declare function app:view-logbooks($node as node(), $model as map(*))
 {
-    let $logbook := doc($config:data-root || "/transcriptions/logbook-1919.xml")
+    let $logbook := doc($config:data-root || "/transcriptions/logbooks/logbook-1919.xml")
     let $xsl      := doc($config:app-root || "/resources/xsl/logbookview.xsl")
+    let $events   := collection($config:data-root || "/transcriptions/logbooks")//tei:div[@type = 'day']
     
-    return transform:transform($logbook, $xsl, ())
+    return transform:transform($events, $xsl, ())
 };
 
 
@@ -247,7 +248,8 @@ declare %templates:wrap function app:expat-info($node as node(), $model as map(*
                         let $titles :=
                             for $bibl in $bibls
                             return
-                                if ($bibl/tei:title) then xs:string($bibl/tei:title)
+                                if ($bibl/tei:title) then 
+                                for $title in $bibl/tei:title return xs:string($title)
                                 else xs:string($bibl)
                         return
                             
