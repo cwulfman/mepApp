@@ -48,7 +48,7 @@
             </td>
         </tr>
     </xsl:template>
-    <xsl:template match="tei:measure[@type='duration']">
+    <xsl:template match="tei:measure-old[@type='duration']">
         <dl class="dl-horizontal">
             <dt>unit</dt>
             <dd>
@@ -63,5 +63,18 @@
                 <xsl:apply-templates/>
             </dd>
         </dl>
+    </xsl:template>
+    <xsl:template match="tei:measure[@type='duration']">
+        <table>
+            <tr>
+                <td>
+                    <xsl:value-of select="@quantity"/>
+                </td>
+                <td>
+                    <xsl:value-of select="@unit"/>
+                    <xsl:if test="@quantity &gt; 1">s</xsl:if>
+                </td>
+            </tr>
+        </table>
     </xsl:template>
 </xsl:stylesheet>
