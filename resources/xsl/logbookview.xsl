@@ -22,11 +22,11 @@
                 </tr>
             </thead>
             <tbody>
-                <xsl:apply-templates select=".//tei:event[@type = 'subscription']"/>
+                <xsl:apply-templates select=".//tei:event"/>
             </tbody>
         </table>
     </xsl:template>
-    <xsl:template match="tei:event[@type='subscription']">
+    <xsl:template match="tei:event">
         <tr>
             <td>
                 <xsl:value-of select="ancestor::tei:div[@type='day']/tei:head/tei:date"/>
@@ -48,21 +48,10 @@
             </td>
         </tr>
     </xsl:template>
-    <xsl:template match="tei:measure-old[@type='duration']">
-        <dl class="dl-horizontal">
-            <dt>unit</dt>
-            <dd>
-                <xsl:value-of select="@unit"/>
-            </dd>
-            <dt>quantity</dt>
-            <dd>
-                <xsl:value-of select="@quantity"/>
-            </dd>
-            <dt>written</dt>
-            <dd>
-                <xsl:apply-templates/>
-            </dd>
-        </dl>
+    <xsl:template match="tei:persName">
+        <a href="subscribers.html?person={substring-after(@ref, '#')}">
+            <xsl:apply-templates/>
+        </a>
     </xsl:template>
     <xsl:template match="tei:measure[@type='duration']">
         <table>

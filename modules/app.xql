@@ -294,4 +294,74 @@ declare %templates:wrap function app:logbook-data-table($node as node(), $model 
 };
 
 
+declare %templates:wrap function app:subscribers($node as node(), $model as map(*))
+{
+    let $subscribers := collection($config:data-root || "/transcriptions/logbooks")//tei:persName
+    return map { "subscribers" : $subscribers }
+};
 
+declare %templates:wrap function app:subscriber-list($node as node(), $model as map(*))
+{
+    let $subscribers := $model('subscribers')
+    return
+        <ul id="subscribers" class="list-group">{
+            for $nameref in distinct-values($subscribers/@ref)
+            let $key := substring-after($nameref, '#')
+            let $link  := "subscribers.html?person=" || $key
+            let $label := 
+                if ($subscribers[@ref = $nameref][1]/text())
+                then $subscribers[@ref = $nameref][1]/text()
+                else "[unnamed]"
+            order by $key
+            return
+                <li class="list-group-item">
+                    <span class="badge">{count($subscribers[@ref = $nameref])}</span>
+                    <a href="{$link}">{ $label }</a>
+                </li>
+      }</ul>
+};
+
+declare %templates:wrap function app:subscriber($node as node(), $model as map(*), $person as xs:string?)
+{
+    let $key :=
+        if ($person) then "#"||$person else ()
+    
+    let $subscriber := 
+        if ($key) then
+            collection($config:data-root || "/transcriptions/logbooks")//tei:persName[@ref = $key]
+        else ()
+        
+        return map { "current-subscriber" : $subscriber }
+};
+
+declare %templates:wrap function app:subscriber-name($node as node(), $model as map(*))
+{
+    let $subscriber := $model('current-subscriber')
+    return
+        if ($subscriber) then
+            $subscriber[1]/text()
+        else ()
+};
+
+declare %templates:wrap function app:current-subscriptions($node as node(), $model as map(*))
+{
+    let $subscriber := $model('current-subscriber')
+    let $xsl        := doc($config:app-root || "/resources/xsl/subscriberview.xsl")
+    let $events     := collection($config:data-root || "/transcriptions/logbooks")//tei:event[.//tei:persName = $subscriber]
+    let $table      :=
+        for $event in $events
+        let $date      := $event/ancestor::tei:div[@type='day']/tei:head/tei:date,
+            $type      := xs:string($event/@type),
+            $duration  := $event/tei:p/tei:measure[@type='duration'],
+            $frequency := $event/tei:p/tei:measure[@type='frequency'],
+            $price     := $event/tei:p/tei:measure[@type='price'],
+            $deposit   := $event/tei:p/tei:measure[@type='deposit']            
+
+        return
+            <eventrec type="{$type}">
+            { $date, $duration, $frequency, $price, $deposit }
+            </eventrec>
+ 
+     return transform:transform($table, $xsl, ())
+
+    };
