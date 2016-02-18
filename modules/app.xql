@@ -131,7 +131,6 @@ declare function app:view-notebook($node as node(), $model as map(*))
 
 declare function app:view-logbooks($node as node(), $model as map(*))
 {
-    let $logbook := doc($config:data-root || "/transcriptions/logbooks/logbook-1919.xml")
     let $xsl      := doc($config:app-root || "/resources/xsl/logbookview.xsl")
     let $events   := collection($config:data-root || "/transcriptions/logbooks")//tei:div[@type = 'day']
     
@@ -267,8 +266,32 @@ declare %templates:wrap function app:expat-info($node as node(), $model as map(*
 };
 
 
+declare %templates:wrap function app:logbook-data-table($node as node(), $model as map(*))
+{
+    <table class='table'>
+        <caption><p>Subscriptions</p></caption>
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Number of Subscriptions</th>
+            </tr>
+        </thead>
+        <tbody>
+    {
+        for $year in collection($config:data-root || "/transcriptions/logbooks")//tei:div[@type='year']
+        let $date := xs:string($year/tei:head/tei:date) 
+        let $subcount := count($year//tei:event[@type='subscription'])
+        order by $date
+        return
+         <tr>
+             <td>{ $date }</td>
+             <td>{ $subcount }</td>
+         </tr>
+     }
+        </tbody>
+     </table>
 
-
+};
 
 
 
