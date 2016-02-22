@@ -4,6 +4,12 @@ module namespace app="http://digitalhumanities.princeton.edu/mep/templates";
 
 import module namespace templates="http://exist-db.org/xquery/templates" ;
 import module namespace config="http://digitalhumanities.princeton.edu/mep/config" at "config.xqm";
+
+import module namespace rest = "http://exquery.org/ns/restxq" ;
+(:  declare namespace rest="http://exquery.org/ns/restxq"; :)
+declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
+
+
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 
 
@@ -379,4 +385,24 @@ declare %templates:wrap function app:residences($node as node(), $model as map(*
         ]
     </script>
     
+};
+
+declare 
+    %rest:GET
+    %rest:path("/mep/residences")
+    %output:method("json")
+function app:residences()
+{
+    let $expats := collection($config:data-root)//tei:listPerson[@xml:id='expats']/tei:person
+    let $residences := $expats//tei:residence
+    return
+    <residences>{
+    for $r in $residences
+    return
+       <residence>
+       <viafid>{ $r/ancestor::tei:person/tei:idno[@type='viaf']/text() }</viafid>
+       <name>{ $r/ancestor::tei:person/tei:persName/tei:surname[1]/text()  }</name>
+       <latlon>{$r/tei:geo/text()}</latlon>
+       </residence>
+       }</residences>
 };
