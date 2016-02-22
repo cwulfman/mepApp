@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+<div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/mappage.html" data-template-at="content">
     <div class="row">
         <div class="col-md-8">
             <div class="page-header">
@@ -7,4 +7,29 @@
             </div>
         </div>
     </div>
+    <div id="map"/>
+    <div data-template="app:residences">
+        <script type="text/javascript">
+            MARKERS = [
+            [ 48.868671, 2.2773 ],
+            [ 48.869893, 2.291691 ]
+            ]
+  
+        </script>
+    </div>
+    <script type="text/javascript">
+        var map = L.map('map').setView([48.850919, 2.338448], 12);
+        
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Mapping Expatriate Paris Project',
+        maxZoom: 18,
+        id: 'cwulfman.p7f319n3'
+        }).addTo(map);
+        
+        var sandco = L.marker([48.850919, 2.338448]).addTo(map);
+        for (i=0; i &lt; MARKERS.length; i++) {
+            L.marker(MARKERS[i]).addTo(map)
+        }
+        
+    </script>
 </div>

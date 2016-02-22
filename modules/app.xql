@@ -365,3 +365,18 @@ declare %templates:wrap function app:current-subscriptions($node as node(), $mod
      return transform:transform($table, $xsl, ())
 
     };
+    
+declare %templates:wrap function app:residences($node as node(), $model as map(*))
+{
+    let $expats := collection($config:data-root)//tei:listPerson[@xml:id='expats']/tei:person
+    let $residences := $expats//tei:residence//tei:geo
+    let $strings :=
+        for $r in $residences return "[" || xs:string($r) || "]"
+    return
+    <script type="text/javascript">
+        var MARKERS = [
+        { string-join(subsequence($strings, 1, 200), ",")}
+        ]
+    </script>
+    
+};
