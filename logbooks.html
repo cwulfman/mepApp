@@ -1,8 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <article xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
     <header>
-        <h1>The Log</h1>
+        <h1>Subscription Log</h1>
         <p>Lorem ipsum</p>
     </header>
-    <div data-template="app:view-logbooks"/>
+    <div id="calendar_basic"/>
+    <div class="container">
+        <hr/>
+        <div class="row">
+            <div class="col-xs-12">
+                <div data-template="app:view-logbooks"/>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        google.charts.load("current", {packages:["calendar"]});
+        google.charts.setOnLoadCallback(drawChart);
+        
+        function drawChart() {
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn({ type: 'date', id: 'Date' });
+        dataTable.addColumn({ type: 'number', id: 'Subscriptions' });
+        for (c=1; c&lt;CALDATA.length; c++) {
+            dataTable.addRows([
+            [ new Date (CALDATA[c].day), CALDATA[c].num]
+            ])
+            };
+
+        
+        var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+        
+        var options = {
+        title: "Shakespeare and Company Subscriptions",
+        height: 450,
+        };
+        
+        chart.draw(dataTable, options);
+        }
+    </script>
 </article>

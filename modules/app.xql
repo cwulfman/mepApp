@@ -1,4 +1,4 @@
-xquery version "3.0";
+xquery version "3.1";
 
 module namespace app="http://digitalhumanities.princeton.edu/mep/templates";
 
@@ -372,6 +372,50 @@ declare %templates:wrap function app:current-subscriptions($node as node(), $mod
 
     };
     
+declare function app:_calendar-chart-data()
+{
+    let $days := collection($config:data-root || "/transcriptions/logbooks")//tei:div[@type = 'day']
+    return
+        <table>
+        {
+            for $day in $days
+            let $events := $day//tei:event
+            order by $day/tei:head/tei:date/@when-iso
+            return
+                <row>
+                    <col>{ xs:string($day/tei:head/tei:date/@when-iso) }</col>
+                    <col>{ count($events)  }</col>
+                </row>
+        }
+        </table>
+
+};
+
+declare function app:subscription-calendar($node as node(), $model as map(*))
+{
+let $chart-data := app:_calendar-chart-data()
+
+let $items := 
+    for $row in $chart-data/row
+    let $date := xs:date($row/col[1])
+    let $count := xs:int($row/col[2])
+    let $map := map { "day": $date, "num" : $count }
+    return
+    $map
+    
+let $array := array { $items }
+
+return
+    <script type="text/javascript">
+        var CALDATA = {
+        serialize($array, 
+        <output:serialization-parameters>
+            <output:method>json</output:method>
+        </output:serialization-parameters>)
+        }
+    </script>
+};
+    
 declare %templates:wrap function app:residences($node as node(), $model as map(*))
 {
     let $expats := collection($config:data-root)//tei:listPerson[@xml:id='expats']/tei:person
@@ -405,4 +449,69 @@ function app:residences()
        <latlon>{$r/tei:geo/text()}</latlon>
        </residence>
        }</residences>
+};
+
+declare 
+    %rest:GET
+    %rest:path("/mep/subscriptions")
+    %output:method("text")
+function app:logbooks-as-csv()
+{
+    let $xsl      := doc($config:app-root || "/resources/xsl/logbook2csv.xsl")
+    let $events   := collection($config:data-root || "/transcriptions/logbooks")//tei:div[@type = 'day']
+    
+    return 
+    (
+        <rest:response>
+            <http:response>
+                <http:header name="access-control-allow-origin" value="*"/>
+                <http:header name="Content-type" value="text/csv"/>
+                <http:header name="charset" value="utf-8"/>
+            </http:response>
+        </rest:response>,
+    transform:transform($events, $xsl, ())
+    )
+};
+
+declare 
+    %rest:GET
+    %rest:path("/mep/subscriptions")
+    %output:method("json")
+    %rest:produces("application/json")
+function app:logbooks-as-json()
+{
+    let $xsl      := doc($config:app-root || "/resources/xsl/logbook2xml.xsl")
+    let $events   := collection($config:data-root || "/transcriptions/logbooks")//tei:div[@type = 'day']
+    
+    return 
+    (
+        <rest:response>
+            <http:response>
+                <http:header name="access-control-allow-origin" value="*"/>
+                <http:header name="Content-type" value="application/json"/>
+                <http:header name="charset" value="utf-8"/>
+            </http:response>
+        </rest:response>,
+    transform:transform($events, $xsl, ())
+    )
+};
+
+declare 
+    %rest:GET
+    %rest:path("/mep/subscriptions/calendar")
+    %output:method("json")
+    %rest:produces("application/json")
+function app:subscription-calendar-as-json()
+{
+     
+    (
+        <rest:response>
+            <http:response>
+                <http:header name="access-control-allow-origin" value="*"/>
+                <http:header name="Content-type" value="application/json"/>
+                <http:header name="charset" value="utf-8"/>
+            </http:response>
+        </rest:response>,
+    app:_calendar-chart-data()
+    )
 };

@@ -2,64 +2,94 @@
 <article xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
     <header>
         <h1>Dashboard</h1>
+        <p>A collection of widgets that give an overview
+        of the MEP data.</p>
     </header>
-    <section class="row">
-        <header>
-            <h2>Personography Stats</h2>
-        </header>
-        <div class="col-md-6">
+    <div class="container">
+        <section class="row">
             <header>
-                <h3>Male and Female Readers</h3>
-                <p>From the personography database, the numbers of
-                library patrons whose sex MEP has identified.</p>
+                <h2>Personography Stats</h2>
             </header>
-            <table class="table" data-template="app:sex-distribution">
-                <caption>
-                    <p>Sex Distribution</p>
-                </caption>
-                <thead>
-                    <tr>
-                        <th>Sex</th>
-                        <th>Number of Individuals</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Female</td>
-                        <td>50</td>
-                    </tr>
-                    <tr>
-                        <td>Male</td>
-                        <td>50</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="col-md-6">
-            <header>
-                <h3>Distribution of Nationalities</h3>
-                <p>From the personography database, the
+            <div class="col-md-6">
+                <header>
+                    <h3>Male and Female Readers</h3>
+                    <p>From the personography database, the numbers of
+                library patrons whose sex MEP has identified.</p>
+                </header>
+                <table class="table" data-template="app:sex-distribution">
+                    <caption>
+                        <p>Sex Distribution</p>
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th>Sex</th>
+                            <th>Number of Individuals</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Female</td>
+                            <td>50</td>
+                        </tr>
+                        <tr>
+                            <td>Male</td>
+                            <td>50</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <header>
+                    <h3>Distribution of Nationalities</h3>
+                    <p>From the personography database, the
                 nationalities represented in the subcriber base.
                 Some subscribers had more than one nationality.</p>
-            </header>
-            <table data-template="app:national-distribution">
-                <caption>
-                    <p>Distribution of Nationalities</p>
-                </caption>
-            </table>
-        </div>
-    </section>
-    <section class="row">
-        <header>
-            <h2>Logbook Stats</h2>
-        </header>
-        <div class="col-md-3">
+                </header>
+                <table data-template="app:national-distribution">
+                    <caption>
+                        <p>Distribution of Nationalities</p>
+                    </caption>
+                </table>
+            </div>
+        </section>
+        <section class="row">
             <header>
-                <h3>Subscription Rates</h3>
-                <p>From the logbooks, the number of subscription
-                events per year.</p>
+                <h2>Logbook Stats</h2>
             </header>
-            <table data-template="app:logbook-data-table"/>
-        </div>
-    </section>
+            <div class="col-md-12">
+                <header>
+                    <h3>Subscription Rates</h3>
+                    <p>From the logbooks, the number of subscription
+                events per year.</p>
+                </header><!--<table data-template="app:logbook-data-table"/>-->
+                <div id="calendar_basic"/>
+                <div data-template="app:subscription-calendar"/>
+            </div>
+        </section>
+    </div>
+    <script type="text/javascript">
+        google.charts.load("current", {packages:["calendar"]});
+        google.charts.setOnLoadCallback(drawChart);
+        
+        function drawChart() {
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn({ type: 'date', id: 'Date' });
+        dataTable.addColumn({ type: 'number', id: 'Subscriptions' });
+        for (c=1; c&lt;CALDATA.length; c++) {
+        dataTable.addRows([
+        [ new Date (CALDATA[c].day), CALDATA[c].num]
+        ])
+        };
+        
+        
+        var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+        
+        var options = {
+        title: "Shakespeare and Company Subscriptions",
+        height: 750,
+        };
+        
+        chart.draw(dataTable, options);
+        }
+    </script>
 </article>

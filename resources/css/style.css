@@ -1,3 +1,29 @@
 /* Application styles could go here */
 footer .poweredby { float: right; margin: 33px 10px 0 0;}
 footer .poweredby img { width: 120px; }
+
+body {background: rgb(245, 255, 245) }
+.navbar { 
+    background: rgb(244, 239, 197);
+    border-bottom-style: groove; 
+    border-bottom-color: red;
+    border-bottom-width: 2px;
+    }
+
+
+
+/**********************************
+Responsive navbar-brand image CSS
+- Remove navbar-brand padding for firefox bug workaround
+- add 100% height and width auto ... similar to how bootstrap img-responsive class works
+***********************************/
+
+.navbar-brand {
+  padding: 0px;
+}
+.navbar-brand>img {
+  height: 100%;
+  padding: 15px;
+  width: auto;
+}
+

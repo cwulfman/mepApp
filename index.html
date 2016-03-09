@@ -1,36 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="page-header">
-                <h1 data-template="config:app-title">Generated page</h1>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Mapping Expatriate Paris Project</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="shortcut icon" href="$shared/resources/images/exist_icon_16x16.ico"/>
+        <link rel="stylesheet" type="text/css" href="$shared/resources/css/bootstrap-3.0.3.min.css"/>
+        <link rel="stylesheet" type="text/css" href="resources/css/home.css"/>
+        <script type="text/javascript" src="$shared/resources/scripts/jquery/jquery-1.7.1.min.js"/>
+        <script type="text/javascript" src="$shared/resources/scripts/loadsource.js"/>
+        <script type="text/javascript" src="$shared/resources/scripts/bootstrap-3.0.3.min.js"/>
+    </head>
+    <body>
+        <div class="jumbotron sandcoHeader">
+            <div class="container">
+                <div id="displayTitle">
+                    <p class="title">
+                        <span class="rubric">M</span>apping Expatriate Paris</p>
+                    <p class="subtitle">The Sylvia Beach Lending Library Project</p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <h2>The Lending Library</h2>
-                <p>Sylvia Beach's famous bookstore, Shakespeare &amp; Company,
-                    was a social hub for anglophone expatriate Paris. In addition to
-                    selling books there, Beach also operated a small lending library.
-                    Explore the subscribers' library cards: see what people
-                    were reading.
-                </p>
-            </div>
-            <div class="col-md-4">
-                <h2>The Expats</h2>
-                <p>The site contains a prosopography of expatriate Paris, drawn
-                initially from the subscribers to Beach's libary. Learn about
-                  the community: where they lived, their reading habits.  
-                </p>
-            </div>
-            <div class="col-md-4">
-                <h2>Modernist Paris</h2>
-                <p>Explore Modernist Paris through maps that show where people
-                    lived.
-                </p>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="well window">
+                        <header>
+                            <h2>The Lending Library</h2>
+                        </header>
+                        <figure>
+                            <a href="cards.html">
+                                <img src="resources/images/outside-bookstore.png" alt="beach and joyce in doorway of Shakespeare and Company"/>
+                            </a>
+                            <figcaption> Sylvia Beach's famous bookstore, Shakespeare &amp; Company,
+                                was a social hub for anglophone expatriate Paris. In addition to
+                                selling books there, Beach also operated a small lending library.
+                                Explore the subscribers' library cards: see what people were
+                                reading. <a class="btn btn-sm" href="cards.html" role="button">See the cards</a>
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="well window">
+                        <header>
+                            <h2>The Expats</h2>
+                        </header>
+                        <figure>
+                            <a href="expats.html">
+                                <img src="resources/images/beach-joyce-small.png" alt="beach and joyce in doorway of Shakespeare and Company"/>
+                            </a>
+                            <figcaption>The site contains a prosopography of expatriate Paris, drawn
+                                initially from the subscribers to Beach's libary. Learn about the
+                                community: where they lived, their reading habits. <a class="btn btn-sm" href="expats.html" role="button">Browse subscribers</a>
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="well window">
+                        <header>
+                            <h2>Modernist Paris</h2>
+                        </header>
+                        <figure>
+                            <a href="maps.html">
+                                <img src="resources/images/6eme.png" alt="map of 6eme"/>
+                            </a>
+                            <figcaption>Explore Modernist Paris through maps that show where people
+                                lived. <a class="btn btn-sm" href="maps.html" role="button">View maps</a>
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    </body>
+</html>
