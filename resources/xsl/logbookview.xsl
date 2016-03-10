@@ -10,41 +10,54 @@
         </xd:desc>
     </xd:doc>
     <xsl:template match="/">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>date subscribed</th>
-                    <th>name of subscriber</th>
-                    <th>length of subscription</th>
-                    <th>number of volumes in subscription</th>
-                    <th>price of subscription</th>
-                    <th>deposit</th>
-                </tr>
-            </thead>
-            <tbody>
-                <xsl:apply-templates select=".//tei:event"/>
-            </tbody>
-        </table>
+        <xsl:apply-templates/>
+    </xsl:template>
+    <xsl:template match="tei:div[@type = 'year']">
+        <section>
+            <header>
+                <h3>
+                    <xsl:value-of select="tei:head/tei:date"/>
+                </h3>
+                <p>
+                    <xsl:value-of select="count(.//tei:event)"/> entries
+                </p>
+            </header>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>date subscribed</th>
+                        <th>name of subscriber</th>
+                        <th>length of subscription</th>
+                        <th>number of volumes in subscription</th>
+                        <th>price of subscription</th>
+                        <th>deposit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <xsl:apply-templates select=".//tei:event"/>
+                </tbody>
+            </table>
+        </section>
     </xsl:template>
     <xsl:template match="tei:event">
         <tr>
             <td>
-                <xsl:value-of select="ancestor::tei:div[@type='day']/tei:head/tei:date"/>
+                <xsl:value-of select="ancestor::tei:div[@type = 'day']/tei:head/tei:date"/>
             </td>
             <td>
                 <xsl:apply-templates select="tei:p/tei:persName"/>
             </td>
             <td>
-                <xsl:apply-templates select="tei:p/tei:measure[@type='duration']"/>
+                <xsl:apply-templates select="tei:p/tei:measure[@type = 'duration']"/>
             </td>
             <td>
-                <xsl:apply-templates select="tei:p/tei:measure[@type='frequency']"/>
+                <xsl:apply-templates select="tei:p/tei:measure[@type = 'frequency']"/>
             </td>
             <td>
-                <xsl:apply-templates select="tei:p/tei:measure[@type='price']"/>
+                <xsl:apply-templates select="tei:p/tei:measure[@type = 'price']"/>
             </td>
             <td>
-                <xsl:apply-templates select="tei:p/tei:measure[@type='deposit']"/>
+                <xsl:apply-templates select="tei:p/tei:measure[@type = 'deposit']"/>
             </td>
         </tr>
     </xsl:template>
@@ -53,7 +66,7 @@
             <xsl:apply-templates/>
         </a>
     </xsl:template>
-    <xsl:template match="tei:measure[@type='duration']">
+    <xsl:template match="tei:measure[@type = 'duration']">
         <table>
             <tr>
                 <td>

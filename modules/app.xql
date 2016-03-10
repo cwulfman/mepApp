@@ -135,12 +135,20 @@ declare function app:view-notebook($node as node(), $model as map(*))
     return transform:transform($notebook, $xsl, ())
 };
 
-declare function app:view-logbooks($node as node(), $model as map(*))
+declare function app:view-logbooks-old($node as node(), $model as map(*))
 {
     let $xsl      := doc($config:app-root || "/resources/xsl/logbookview.xsl")
     let $events   := collection($config:data-root || "/transcriptions/logbooks")//tei:div[@type = 'day']
     
     return transform:transform($events, $xsl, ())
+};
+
+declare function app:view-logbooks($node as node(), $model as map(*))
+{
+    let $xsl      := doc($config:app-root || "/resources/xsl/logbookview.xsl")
+    let $years    := collection($config:data-root || "/transcriptions/logbooks")//tei:div[@type = 'year']
+    for $year in $years
+    return transform:transform($year, $xsl, ())
 };
 
 
@@ -514,4 +522,29 @@ function app:subscription-calendar-as-json()
         </rest:response>,
     app:_calendar-chart-data()
     )
+};
+
+declare function app:_borrowed-items()
+{
+    collection($config:data-root)//tei:bibl
+};
+
+declare
+    %rest:GET
+    %rest:path('/mep/borrowed')
+    %output:method("json")
+function app:borrowed-items-as-json()
+{
+    let $bibls := app:_borrowed-items()
+    return
+    <borrowedItems> {
+    for $bibl in $bibls
+    let $borrower := $bibl/ancestor::tei:TEI/tei:teiHeader/tei:profileDesc/tei:particDesc/tei:person[@role='cardholder'][1]
+    return
+        <borrowedItem>
+            <title>{ xs:string($bibl/tei:title[1]) }</title>
+            <borrower>{ xs:string($borrower/tei:persName) }</borrower>
+            <borrowerid>{ xs:string($borrower/@ana) }</borrowerid>
+        </borrowedItem>
+        }</borrowedItems>
 };
