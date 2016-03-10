@@ -16,7 +16,8 @@
                     <p>From the personography database, the numbers of
                 library patrons whose sex MEP has identified.</p>
                 </header>
-                <table class="table" data-template="app:sex-distribution">
+                <div id="sex-distribution-chart"/>
+                <div data-template="app:sex-distribution-chart"/><!--<table class="table" data-template="app:sex-distribution">
                     <caption>
                         <p>Sex Distribution</p>
                     </caption>
@@ -36,7 +37,7 @@
                             <td>50</td>
                         </tr>
                     </tbody>
-                </table>
+                </table>-->
             </div>
             <div class="col-md-6">
                 <header>
@@ -68,28 +69,53 @@
         </section>
     </div>
     <script type="text/javascript">
-        google.charts.load("current", {packages:["calendar"]});
+        google.charts.load('current', {packages:["corechart", "calendar"]});
         google.charts.setOnLoadCallback(drawChart);
         
+        // Callback that draws sex distribution
+        google.charts.setOnLoadCallback(sexDistributionChart);
+        
         function drawChart() {
-        var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn({ type: 'date', id: 'Date' });
-        dataTable.addColumn({ type: 'number', id: 'Subscriptions' });
+        var calendar_dataTable = new google.visualization.DataTable();
+        calendar_dataTable.addColumn({ type: 'date', id: 'Date' });
+        calendar_dataTable.addColumn({ type: 'number', id: 'Subscriptions' });
+        
         for (c=1; c&lt;CALDATA.length; c++) {
-        dataTable.addRows([
+        calendar_dataTable.addRows([
         [ new Date (CALDATA[c].day), CALDATA[c].num]
         ])
         };
         
-        
-        var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
-        
-        var options = {
+        var calendar_options = {
         title: "Shakespeare and Company Subscriptions",
         height: 750,
         };
+
+    var calendar = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+    calendar.draw(calendar_dataTable, calendar_options);
+    
+
+        }
         
-        chart.draw(dataTable, options);
+        function sexDistributionChart() {
+        
+        // The pie chart
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Element');
+        data.addColumn('number', 'Percentage');
+        
+        for (c=1; c&lt;SEXDATA.length; c++) {
+        data.addRows([
+         [ SEXDATA[c].label, SEXDATA[c].num  ]
+        ])
+        };
+        
+        var options = {
+        title: 'Patron Sex Distribution'
+        };
+        
+        var pie_chart = new google.visualization.PieChart(document.getElementById('sex-distribution-chart'));
+        pie_chart.draw(data, options);        
         }
     </script>
 </article>

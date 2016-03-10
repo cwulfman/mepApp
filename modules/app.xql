@@ -14,7 +14,7 @@ declare namespace tei="http://www.tei-c.org/ns/1.0";
 
 
 declare
-    %templates:wrap
+
 function app:sex-distribution($node as node(), $model as map(*))
 {
     let $expats := collection($config:data-root)//tei:listPerson[@xml:id = 'expats']
@@ -50,7 +50,7 @@ return
     </table>
 };
 
-declare %templates:wrap function app:national-distribution($node as node(), $model as map(*))
+declare function app:national-distribution($node as node(), $model as map(*))
 {
     let $expats := collection($config:data-root)//tei:listPerson[@xml:id = 'expats']
     let $nationalities := $expats//tei:nationality
@@ -423,7 +423,36 @@ return
         }
     </script>
 };
+
+declare function app:sex-distribution-chart($node as node(), $model as map(*))
+{
+    let $expats := collection($config:data-root)//tei:listPerson[@xml:id = 'expats']
+    let $identified-as-female :=
+       $expats/tei:person[tei:sex/@value = $config:female-key]
+    let $identified-as-male :=
+        $expats/tei:person[tei:sex/@value = $config:male-key]
+    let $unidentified :=
+        $expats/tei:person[empty(tei:sex)]
+        
+    let $iaf :=  map { "label": "identified as female", "num": count($identified-as-female) }
+    let $iam :=  map { "label": "identified as male", "num": count($identified-as-male) }
+    let $uni :=  map { "label": "unidentified", "num": count($unidentified) }
     
+
+    let $array := array { $uni, $iam, $iaf}
+    let $array := array:append($array, $uni) (: don't understand why I need this hack. :)
+    return
+    <script type="text/javascript">
+        var SEXDATA = {
+        serialize($array, 
+        <output:serialization-parameters>
+            <output:method>json</output:method>
+        </output:serialization-parameters>)
+        }
+    </script>
+    
+};
+
 declare %templates:wrap function app:residences($node as node(), $model as map(*))
 {
     let $expats := collection($config:data-root)//tei:listPerson[@xml:id='expats']/tei:person
