@@ -440,7 +440,7 @@ declare function app:sex-distribution-chart($node as node(), $model as map(*))
     
 
     let $array := array { $uni, $iam, $iaf}
-    let $array := array:append($array, $uni) (: don't understand why I need this hack. :)
+    let $array := array:append($array, $uni)  (: Don't know why I need this hack: pie-chart visualization drops first element of the array :)
     return
     <script type="text/javascript">
         var SEXDATA = {
@@ -449,8 +449,32 @@ declare function app:sex-distribution-chart($node as node(), $model as map(*))
             <output:method>json</output:method>
         </output:serialization-parameters>)
         }
-    </script>
-    
+    </script>  
+};
+
+declare function app:nationality-distribution-chart($node as node(), $model as map(*))
+{
+    let $expats := collection($config:data-root)//tei:listPerson[@xml:id = 'expats']
+    let $nationalities := $expats//tei:nationality
+    let $items :=
+        for $key in distinct-values($nationalities/@key)
+        let $label := xs:string($key)
+        let $count := count($nationalities[@key=$key])
+        let $map := map { "label": $label, "num" : xs:int($count)    }
+    return $map
+        
+    let $array := array { $items }
+    let $array := array:append($array, $items[1]) (: Don't know why I need this hack: pie-chart visualization drops first element of the array :)
+
+    return
+        <script type="text/javascript">
+            var NATDATA = {
+            serialize($array, 
+         <output:serialization-parameters>
+            <output:method>json</output:method>
+         </output:serialization-parameters>)
+        }
+     </script>
 };
 
 declare %templates:wrap function app:residences($node as node(), $model as map(*))

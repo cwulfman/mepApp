@@ -46,11 +46,12 @@
                 nationalities represented in the subcriber base.
                 Some subscribers had more than one nationality.</p>
                 </header>
-                <table data-template="app:national-distribution">
+                <div id="nationality-distribution-chart"/>
+                <div data-template="app:nationality-distribution-chart"/><!--                <table data-template="app:national-distribution">
                     <caption>
                         <p>Distribution of Nationalities</p>
                     </caption>
-                </table>
+                </table>-->
             </div>
         </section>
         <section class="row">
@@ -74,6 +75,8 @@
         
         // Callback that draws sex distribution
         google.charts.setOnLoadCallback(sexDistributionChart);
+        // Callback that draws nationality distribution
+        google.charts.setOnLoadCallback(nationalityDistributionChart);        
         
         function drawChart() {
         var calendar_dataTable = new google.visualization.DataTable();
@@ -101,13 +104,11 @@
         
         // The pie chart
         var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Element');
-        data.addColumn('number', 'Percentage');
+        data.addColumn('string', 'label');
+        data.addColumn('number', 'num');
         
         for (c=1; c&lt;SEXDATA.length; c++) {
-        data.addRows([
-         [ SEXDATA[c].label, SEXDATA[c].num  ]
-        ])
+        data.addRow([ SEXDATA[c].label, SEXDATA[c].num  ])
         };
         
         var options = {
@@ -115,6 +116,27 @@
         };
         
         var pie_chart = new google.visualization.PieChart(document.getElementById('sex-distribution-chart'));
+        pie_chart.draw(data, options);        
+        }
+        
+        function nationalityDistributionChart() {
+        
+        // The pie chart
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'label');
+        data.addColumn('number', 'num');
+        
+        
+        for (c=1; c&lt;NATDATA.length; c++) {
+        data.addRow([ NATDATA[c].label, NATDATA[c].num  ])
+        };
+        
+        
+        var options = {
+        title: 'Nationality Distribution'
+        };
+        
+        var pie_chart = new google.visualization.PieChart(document.getElementById('nationality-distribution-chart'));
         pie_chart.draw(data, options);        
         }
     </script>
