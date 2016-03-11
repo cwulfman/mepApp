@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <article xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
     <header>
-        <h1>Dashboard</h1>
-        <p>A collection of widgets that give an overview
-        of the MEP data.</p>
+        <h1>Dashboard</h1><!--        <p>A collection of widgets that give an overview
+        of the MEP data.</p>-->
     </header>
     <div class="container">
-        <section class="row">
-            <header>
+        <section class="row"><!--            <header>
                 <h2>Personography Stats</h2>
-            </header>
-            <div class="col-md-6">
-                <header>
+            </header>-->
+            <div class="col-md-6"><!--                <header>
                     <h3>Male and Female Readers</h3>
                     <p>From the personography database, the numbers of
                 library patrons whose sex MEP has identified.</p>
-                </header>
+                </header>-->
                 <div id="sex-distribution-chart"/>
                 <div data-template="app:sex-distribution-chart"/><!--<table class="table" data-template="app:sex-distribution">
                     <caption>
@@ -39,13 +36,12 @@
                     </tbody>
                 </table>-->
             </div>
-            <div class="col-md-6">
-                <header>
+            <div class="col-md-6"><!--<header>
                     <h3>Distribution of Nationalities</h3>
                     <p>From the personography database, the
                 nationalities represented in the subcriber base.
                 Some subscribers had more than one nationality.</p>
-                </header>
+                </header>-->
                 <div id="nationality-distribution-chart"/>
                 <div data-template="app:nationality-distribution-chart"/><!--                <table data-template="app:national-distribution">
                     <caption>
@@ -54,16 +50,14 @@
                 </table>-->
             </div>
         </section>
-        <section class="row">
-            <header>
+        <section class="row"><!--            <header>
                 <h2>Logbook Stats</h2>
-            </header>
-            <div class="col-md-12">
-                <header>
+            </header>-->
+            <div class="col-md-12"><!--<header>
                     <h3>Subscription Rates</h3>
                     <p>From the logbooks, the number of subscription
                 events per year.</p>
-                </header><!--<table data-template="app:logbook-data-table"/>-->
+                </header>--><!--<table data-template="app:logbook-data-table"/>-->
                 <div id="calendar_basic"/>
                 <div data-template="app:subscription-calendar"/>
             </div>
