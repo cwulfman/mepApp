@@ -135,20 +135,12 @@ declare function app:view-notebook($node as node(), $model as map(*))
     return transform:transform($notebook, $xsl, ())
 };
 
-declare function app:view-logbooks-old($node as node(), $model as map(*))
-{
-    let $xsl      := doc($config:app-root || "/resources/xsl/logbookview.xsl")
-    let $events   := collection($config:data-root || "/transcriptions/logbooks")//tei:div[@type = 'day']
-    
-    return transform:transform($events, $xsl, ())
-};
-
 declare function app:view-logbooks($node as node(), $model as map(*))
 {
     let $xsl      := doc($config:app-root || "/resources/xsl/logbookview.xsl")
     let $years    := collection($config:data-root || "/transcriptions/logbooks")//tei:div[@type = 'year']
-    for $year in $years
-    return transform:transform($year, $xsl, ())
+
+    return transform:transform($years, $xsl, ())
 };
 
 

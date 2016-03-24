@@ -10,17 +10,37 @@
         </xd:desc>
     </xd:doc>
     <xsl:template match="/">
-        <xsl:apply-templates/>
+        <div>
+            <ul class="nav nav-tabs">
+                <xsl:for-each select=".//tei:div[@type = 'year']">
+                    <xsl:sort select="tei:head/tei:date"/>
+                    <xsl:variable name="tag">
+                        <xsl:value-of select="current()/tei:head/tei:date"/>
+                    </xsl:variable>
+                    <li>
+                        <a data-toggle="tab" href="#tab{$tag}">
+                            <xsl:value-of select="$tag"/>
+                        </a>
+                    </li>
+                </xsl:for-each>
+            </ul>
+            <div class="tab-content">
+                <xsl:apply-templates/>
+            </div>
+        </div>
     </xsl:template>
     <xsl:template match="tei:div[@type = 'year']">
-        <section>
+        <xsl:variable name="datestring" as="xs:string" select="tei:head/tei:date"/>
+        <xsl:variable name="tabid">
+            <xsl:value-of select="concat('tab', $datestring)"/>
+        </xsl:variable>
+        <div id="{$tabid}" class="tab-pane fade">
             <header>
                 <h3>
                     <xsl:value-of select="tei:head/tei:date"/>
                 </h3>
                 <p>
-                    <xsl:value-of select="count(.//tei:event)"/> entries
-                </p>
+                    <xsl:value-of select="count(.//tei:event)"/> entries </p>
             </header>
             <table class="table">
                 <thead>
@@ -37,7 +57,7 @@
                     <xsl:apply-templates select=".//tei:event"/>
                 </tbody>
             </table>
-        </section>
+        </div>
     </xsl:template>
     <xsl:template match="tei:event">
         <tr>
