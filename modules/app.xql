@@ -5,6 +5,9 @@ module namespace app="http://digitalhumanities.princeton.edu/mep/templates";
 import module namespace templates="http://exist-db.org/xquery/templates" ;
 import module namespace config="http://digitalhumanities.princeton.edu/mep/config" at "config.xqm";
 
+import module namespace datetime = "http://exist-db.org/xquery/datetime";
+import module namespace functx = "http://www.functx.com" at "/db/system/repo/functx-1.0/functx/functx.xql";
+
 import module namespace rest = "http://exquery.org/ns/restxq" ;
 (:  declare namespace rest="http://exquery.org/ns/restxq"; :)
 declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
@@ -13,9 +16,15 @@ declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 
 
-declare
+declare function app:_active-subscriptions($subscriptions, $fromDate, $toDate)
+as element()*
+{    
+    $subscriptions[(@begin < $toDate) and (@end > $fromDate)]
+};
 
-function app:sex-distribution($node as node(), $model as map(*))
+
+
+declare function app:sex-distribution($node as node(), $model as map(*))
 {
     let $expats := collection($config:data-root)//tei:listPerson[@xml:id = 'expats']
     let $identified-as-female :=
@@ -453,7 +462,7 @@ declare function app:nationality-distribution-chart($node as node(), $model as m
         let $label := xs:string($key)
         let $count := count($nationalities[@key=$key])
         let $map := map { "label": $label, "num" : xs:int($count)    }
-    return $map
+        return $map
         
     let $array := array { $items }
     let $array := array:append($array, $items[1]) (: Don't know why I need this hack: pie-chart visualization drops first element of the array :)
@@ -467,6 +476,43 @@ declare function app:nationality-distribution-chart($node as node(), $model as m
          </output:serialization-parameters>)
         }
      </script>
+};
+
+declare function app:active-subscriptions-chart($node as node(), $model as map(*))
+{
+    let $subscriptions := 
+     for $event in collection("/db/mep-data/transcriptions/logbooks")//tei:event
+     let $subDate := xs:date($event/ancestor::tei:div[@type='day']/tei:head/tei:date/@when-iso)
+     let $duration :=
+      if ($event/tei:measure[@type='duration'])
+       then xs:int($event/tei:measure[@type='duration'])
+      else 0
+     order by $subDate
+     return 
+      <subscription begin="{$subDate}" end="{functx:add-months($subDate, $duration)}"/>
+
+    let $activeSubscriptions :=
+    for $year in collection("/db/mep-data/transcriptions/logbooks")//tei:div[@type='year']
+     for $month in $year/tei:div[@type='month']
+      let $beginMonth := xs:date($month//tei:div[@type='day'][1]/tei:head/tei:date/@when-iso)
+      let $endMonth   := xs:date($month//tei:div[@type='day'][last()]/tei:head/tei:date/@when-iso)
+      let $active     := count(app:_active-subscriptions($subscriptions, $beginMonth, $endMonth))
+      order by $beginMonth
+      return map { "date": $beginMonth, "count": $active  }
+
+
+    let $array := array { $activeSubscriptions }
+    let $array := array:append($array, $activeSubscriptions[1]) (: Don't know why I need this hack: pie-chart visualization drops first element of the array :)
+
+    return
+        <script type="text/javascript">
+            var ACTIVESUBDATA = {
+            serialize($array, 
+             <output:serialization-parameters>
+              <output:method>json</output:method>
+             </output:serialization-parameters>)
+            }
+        </script>
 };
 
 declare %templates:wrap function app:residences($node as node(), $model as map(*))
@@ -593,3 +639,4 @@ function app:borrowed-items-as-json()
         </borrowedItem>
         }</borrowedItems>
 };
+

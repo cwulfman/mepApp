@@ -62,6 +62,15 @@
                 <div data-template="app:subscription-calendar"/>
             </div>
         </section>
+        <section class="row">
+            <div class="col-md-12">
+                <h2>Active Subscribers</h2>
+                <div id="active-subscriptions-chart"/>
+                <div data-template="app:active-subscriptions-chart">
+                    <p>script goes here</p>
+                </div>
+            </div>
+        </section>
     </div>
     <script type="text/javascript">
         google.charts.load('current', {packages:["corechart", "calendar"]});
@@ -71,6 +80,9 @@
         google.charts.setOnLoadCallback(sexDistributionChart);
         // Callback that draws nationality distribution
         google.charts.setOnLoadCallback(nationalityDistributionChart);        
+        
+        // Callback that draws active subscribers chart
+        google.charts.setOnLoadCallback(activeSubscribersChart);        
         
         function drawChart() {
         var calendar_dataTable = new google.visualization.DataTable();
@@ -132,6 +144,25 @@
         
         var pie_chart = new google.visualization.PieChart(document.getElementById('nationality-distribution-chart'));
         pie_chart.draw(data, options);        
+        }
+        
+        function activeSubscribersChart() {
+        
+        var sub_data = new google.visualization.DataTable();
+        sub_data.addColumn('date', 'date');
+        sub_data.addColumn('number', 'subscribers');
+        
+        for (c=1; c&lt;ACTIVESUBDATA.length; c++) {
+        sub_data.addRow([ new Date(ACTIVESUBDATA[c].date), ACTIVESUBDATA[c].count ])
+        }
+        
+        var options = {
+        title: 'Active Subscriptions'
+        };
+        
+        var sub_chart = new google.visualization.ColumnChart(document.getElementById('active-subscriptions-chart'));
+        sub_chart.draw(sub_data, options);        
+        
         }
     </script>
 </article>
