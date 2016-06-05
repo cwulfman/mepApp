@@ -322,16 +322,22 @@ declare %templates:wrap function app:subscriber-list($node as node(), $model as 
         <ul id="subscribers" class="list-group">{
             for $nameref in distinct-values($subscribers/@ref)
             let $key := substring-after($nameref, '#')
-            let $link  := "subscribers.html?person=" || $key
+            let $link  := if ($key) then "subscribers.html?person=" || $key else ()
+            let $subrefs := $subscribers[@ref = $nameref]
             let $label := 
-                if ($subscribers[@ref = $nameref][1]/text())
-                then $subscribers[@ref = $nameref][1]/text()
+                if ($subrefs[1]/text())
+                then xs:string($subrefs[1])
                 else "[unnamed]"
             order by $key
             return
                 <li class="list-group-item">
-                    <span class="badge">{count($subscribers[@ref = $nameref])}</span>
-                    <a href="{$link}">{ $label }</a>
+                    <span class="badge">{count($subrefs)}</span>
+                    <span>
+                    {
+                        if ($link) then <a href="{$link}">{ $label }</a> else $label
+                    }
+                    </span>
+                    
                 </li>
       }</ul>
 };
@@ -372,6 +378,7 @@ declare %templates:wrap function app:current-subscriptions($node as node(), $mod
             $price     := $event/tei:p/tei:measure[@type='price'],
             $deposit   := $event/tei:p/tei:measure[@type='deposit']            
 
+        order by $date
         return
             <eventrec type="{$type}">
             { $date, $duration, $frequency, $price, $deposit }
@@ -481,7 +488,7 @@ declare function app:nationality-distribution-chart($node as node(), $model as m
 declare function app:active-subscriptions-chart($node as node(), $model as map(*))
 {
     let $subscriptions := 
-     for $event in collection("/db/mep-data/transcriptions/logbooks")//tei:event
+     for $event in collection("/db/mep-data/transcriptions/logbooks")//tei:event[@type='subscription' or @type='renewal']
      let $subDate := xs:date($event/ancestor::tei:div[@type='day']/tei:head/tei:date/@when-iso)
      let $duration :=
       if ($event/tei:measure[@type='duration'])
