@@ -489,7 +489,7 @@ declare function app:active-subscriptions-chart($node as node(), $model as map(*
 {
     let $subscriptions := 
      for $event in collection("/db/mep-data/transcriptions/logbooks")//tei:event[@type='subscription' or @type='renewal']
-     let $subDate := xs:date($event/ancestor::tei:div[@type='day']/tei:head/tei:date/@when-iso)
+     let $subDate := xs:date($event/ancestor::tei:div[@type='day'][1]/tei:head[1]/tei:date[1]/@when-iso)
      let $duration :=
       if ($event/tei:measure[@type='duration'])
        then xs:int($event/tei:measure[@type='duration'])
