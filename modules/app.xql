@@ -16,10 +16,18 @@ declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 
 
+declare function app:_active-subscriptions-old($subscriptions, $fromDate, $toDate)
+as element()*
+{    
+    $subscriptions[(@begin <= $toDate) and (@end >= $fromDate)]
+};
+
+
+
 declare function app:_active-subscriptions($subscriptions, $fromDate, $toDate)
 as element()*
 {    
-    $subscriptions[(@begin < $toDate) and (@end > $fromDate)]
+    $subscriptions[(@start <= $toDate) and (@end >= $fromDate)]
 };
 
 
@@ -485,7 +493,7 @@ declare function app:nationality-distribution-chart($node as node(), $model as m
      </script>
 };
 
-declare function app:active-subscriptions-chart($node as node(), $model as map(*))
+declare function app:active-subscriptions-chart-old($node as node(), $model as map(*))
 {
     let $subscriptions := 
      for $event in collection("/db/mep-data/transcriptions/logbooks")//tei:event[@type='subscription' or @type='renewal']
@@ -497,6 +505,34 @@ declare function app:active-subscriptions-chart($node as node(), $model as map(*
      order by $subDate
      return 
       <subscription begin="{$subDate}" end="{functx:add-months($subDate, $duration)}"/>
+
+    let $activeSubscriptions :=
+    for $year in collection("/db/mep-data/transcriptions/logbooks")//tei:div[@type='year']
+     for $month in $year/tei:div[@type='month']
+      let $beginMonth := xs:date($month//tei:div[@type='day'][1]/tei:head/tei:date/@when-iso)
+      let $endMonth   := xs:date($month//tei:div[@type='day'][last()]/tei:head/tei:date/@when-iso)
+      let $active     := count(app:_active-subscriptions($subscriptions, $beginMonth, $endMonth))
+      order by $beginMonth
+      return map { "date": $beginMonth, "count": $active  }
+
+
+    let $array := array { $activeSubscriptions }
+    let $array := array:append($array, $activeSubscriptions[1]) (: Don't know why I need this hack: pie-chart visualization drops first element of the array :)
+
+    return
+        <script type="text/javascript">
+            var ACTIVESUBDATA = {
+            serialize($array, 
+             <output:serialization-parameters>
+              <output:method>json</output:method>
+             </output:serialization-parameters>)
+            }
+        </script>
+};
+
+declare function app:active-subscriptions-chart($node as node(), $model as map(*))
+{
+    let $subscriptions := doc('/db/mep-data/data/subscriptions.xml')//subscription
 
     let $activeSubscriptions :=
     for $year in collection("/db/mep-data/transcriptions/logbooks")//tei:div[@type='year']
