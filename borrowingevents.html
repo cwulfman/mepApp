@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <header>
+        <h1>Borrowing Event Report</h1>
+        <p>October 28, 2016</p>
+    </header>
+    <ul>
+        <li>Total number of borrowed items on all cards</li>
+        <li>
+            <ul>
+                <li>number included in borrowing events</li>
+                <li>number not included in borrowing events</li>
+            </ul>
+        </li>
+        <li>Percent of borrowing events encoded</li>
+    </ul>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"/>
+    <div id="chart_div"/>
+    <script type="text/javascript">
+        var DATA = google.visualization.arrayToDataTable([
+        ['subscriber', 'coded events', 'uncoded events'],
+        ['#whit.ta',50,0],
+        ['#pott.th', 54, 52]
+        ]);
+    </script>
+    <script type="text/javascript">//
+        
+google.charts.load('current', {packages: ['corechart', 'bar']});
+google.charts.setOnLoadCallback(drawStacked);
+
+function drawStacked() {
+      var data = google.visualization.arrayToDataTable([
+        ['subscriber', 'coded events', 'uncoded events'],
+        ['#whit.ta',50,0],
+        ['#pott.th', 52, 2],       
+      ]);
+      
+      var options = {
+        title: 'Encoded Borrowing Events',
+        chartArea: {width: '50%'},
+        isStacked: true,
+        hAxis: {
+          title: 'Total Borrowed Items',
+          minValue: 0,
+        },
+        vAxis: {
+          title: 'cardholder'
+        }
+      };
+      var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+    }
+//</script>
+    <script type="text/javascript"/>
+</article>

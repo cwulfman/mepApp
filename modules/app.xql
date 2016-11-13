@@ -15,22 +15,11 @@ declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
 
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 
-
-declare function app:_active-subscriptions-old($subscriptions, $fromDate, $toDate)
-as element()*
-{    
-    $subscriptions[(@begin <= $toDate) and (@end >= $fromDate)]
-};
-
-
-
 declare function app:_active-subscriptions($subscriptions, $fromDate, $toDate)
 as element()*
 {    
     $subscriptions[(@start <= $toDate) and (@end >= $fromDate)]
 };
-
-
 
 declare function app:sex-distribution($node as node(), $model as map(*))
 {
@@ -317,13 +306,36 @@ declare %templates:wrap function app:logbook-data-table($node as node(), $model 
 };
 
 
-declare %templates:wrap function app:subscribers($node as node(), $model as map(*))
+declare %templates:wrap function app:subscribers-old($node as node(), $model as map(*))
 {
     let $subscribers := collection($config:data-root || "/transcriptions/logbooks")//tei:persName
     return map { "subscribers" : $subscribers }
 };
 
+
+declare %templates:wrap function app:subscribers($node as node(), $model as map(*))
+{
+    let $subscribers := doc($config:data-root || "/transcriptions/personography.xml")//tei:person
+    return map { "subscribers" : $subscribers }
+};
+
 declare %templates:wrap function app:subscriber-list($node as node(), $model as map(*))
+{
+    let $subscribers := $model('subscribers')
+    return
+        <ul id="subscribers" class="list-group">{
+        for $subscriber in $subscribers
+        let $sortkey := xs:string($subscriber/tei:persName[1]/tei:surname[1])
+        let $label := local:name-to-displayName($subscriber/tei:persName)
+
+        return
+         <li><a href="member.html?id={$subscriber/@xml:id}">{$label}</a></li>
+
+      }</ul>
+};
+
+
+declare %templates:wrap function app:subscriber-list-old($node as node(), $model as map(*))
 {
     let $subscribers := $model('subscribers')
     return
@@ -533,6 +545,7 @@ declare function app:active-subscriptions-chart-old($node as node(), $model as m
 declare function app:active-subscriptions-chart($node as node(), $model as map(*))
 {
     let $subscriptions := doc('/db/mep-data/data/subscriptions.xml')//subscription
+(:    let $subscriptions := local:subscriptions():)
 
     let $activeSubscriptions :=
     for $year in collection("/db/mep-data/transcriptions/logbooks")//tei:div[@type='year']
@@ -660,7 +673,7 @@ function app:subscription-calendar-as-json()
 
 declare function app:_borrowed-items()
 {
-    collection($config:data-root)//tei:bibl
+    collection($config:data-root)//tei:bibl[@ana="#borrowedItem"]
 };
 
 declare
@@ -683,3 +696,301 @@ function app:borrowed-items-as-json()
         }</borrowedItems>
 };
 
+declare function app:_borrowing-event-report()
+{
+let $core-titles    := ('mep:001p1r', 'mep:004j77', 'mep:002m04', 'mep:000r12', 'mep:002z2h')
+let $core-cards:= collection($config:data-root || "/transcriptions/cards")//tei:TEI[.//tei:bibl[@corresp = $core-titles]]
+
+let $records :=
+for $card in $core-cards
+let $person := $card//tei:person[@role='cardholder']
+let $borrowed-items := $card//tei:bibl[@ana='#borrowedItem']
+let $borrowing-events := $card//tei:ab[@ana='#borrowingEvent']
+order by count($borrowed-items)
+return
+    <record>
+        <name>{ $person[1]/tei:persName/text() }</name>
+        <id>{ xs:string($person[1]/@ana) }</id>
+        <borrowedItems>{ count($borrowed-items) }</borrowedItems>
+        <borrowingEvents>{ count($borrowing-events) }</borrowingEvents>
+        <uncoded>{ count($borrowed-items) - count($borrowing-events) }</uncoded>
+    </record>
+    
+return <records>{ $records }</records>
+};
+
+(:~ Generates report for tracking progress of encoding core data set.
+:)
+declare
+ %rest:GET
+ %rest:path('/mep/report')
+ %output:method("json")
+ %rest:produces("application/json")
+function app:borrowing-event-report-as-json()
+{
+app:_borrowing-event-report()
+};
+
+declare
+ %rest:GET
+ %rest:path('/mep/report')
+ %output:method("text")
+ %rest:produces("text/csv")
+ function app:borrowing-event-report-as-csv()
+ {
+ let $records := app:_borrowing-event-report()
+ return
+ (
+concat(string-join(('name', 'id', 'borrowedItems', 'borrowingEvents', 'uncoded'), ','), codepoints-to-string(10)),
+for $r in $records/record
+return 
+concat(string-join(($r/name, $r/id, $r/borrowedItems, $r/borrowingEvents, $r/uncoded), ','), codepoints-to-string(10))
+)
+ };
+ 
+declare function local:name-to-displayName($persName)
+{
+    let $surname :=
+        if (count($persName/tei:surname) = 1)
+            then $persName/tei:surname
+        else if ($persName/tei:surname/@sort)
+            then $persName/tei:surname[@sort = '1']
+        else if (count($persName/tei:surname) > 1)
+            then $persName/tei:surname[1]
+        else "unknown"
+        
+     let $forename :=
+        if (count($persName/tei:forename) = 1)
+            then $persName/tei:forename
+        else if (count($persName/tei:forename) > 1)
+            then $persName/tei:forename[1]
+        else ""
+    return string-join((xs:string($forename[1]), xs:string($surname[1]) ), ' ')
+};
+ 
+declare function app:_subscribers()
+ {
+    let $persons := doc('/db/mep-data/transcriptions/personography.xml')//tei:person
+    for $person in $persons
+    order by $person/tei:persName[1]/tei:surname[1]
+    return
+       <person xml:id="{$person/@xml:id}">
+           <displayName>{ local:name-to-displayName($person/tei:persName[1]) }</displayName>
+       </person>
+ };
+ 
+declare function app:member($node as node(), $model as map(*), $id as xs:string)
+as map(*)
+{
+    let $person := doc('/db/mep-data/transcriptions/personography.xml')//tei:person[@xml:id=$id]
+        return
+        map { "person" : $person  }
+};
+
+declare function app:member-name($node as node(), $model as map(*))
+as xs:string
+{
+    local:name-to-displayName($model('person')/tei:persName)
+};
+
+declare function app:member-demographics($node as node(), $model as map(*))
+as element()
+{
+    let $expat := $model('person')
+    return
+         <dl class="dl-horizontal">
+
+                <dt>birth</dt>
+                <dd>{ $expat/tei:birth }</dd>
+                
+                <dt>death</dt>
+                <dd>{ $expat/tei:death }</dd>
+                
+                <dt>identified nationality</dt>
+                <dd><ul class="list-inline">
+                    {
+                        for $nationality in $expat/tei:nationality
+                        return <li>{ xs:string($nationality/@key) }</li>
+                    }
+                </ul></dd>
+                
+                <dt>extracted addresses</dt>
+                <dd>{
+                    let $residences := $expat/tei:residence
+                    return
+                        <ul class="list-unstyled">
+                        { 
+                            for $residence in $residences return <li>{ $residence }</li>
+                        }
+                        </ul>
+                }</dd>
+                
+                <dt>see also</dt>
+                <dd>{ 
+                    let $viafnum := $expat/tei:idno[@type='viaf']
+                    let $link    := 'http://viaf.org/viaf/' || $viafnum
+                    return
+                    <a href="{$link}">{ $link }</a>                
+                }</dd>
+                
+                </dl>
+};
+
+declare function app:member-subscription-history($node as node(), $model as map(*))
+as element()
+{
+    let $subscriberid := $model('person')/@xml:id
+    let $events :=
+        collection('/db/mep-data/transcriptions/logbooks')//tei:event[.//tei:persName/@ref = "#"||$subscriberid]
+    return 
+    <table class="table">
+        <tr>
+            <th>date</th>
+            <th>type</th>
+        </tr>
+{ for $e in $events 
+  let $type := xs:string($e/@type)
+  let $date := $e/ancestor::tei:div[@type='day']/tei:head/tei:date/@when-iso
+  order by $date
+return 
+<tr>
+    <td>{ xs:string($date) }</td>
+    <td>{ $type }</td>
+</tr>
+}
+</table>
+};
+
+declare function app:member-borrowing-history($node as node(), $model as map(*))
+as element()
+{
+    let $subscriberid := $model('person')/@xml:id
+    let $cards := collection('/db/mep-data/transcriptions/cards')//tei:person[@role = 'cardholder' and @ana = "#"||$subscriberid]/ancestor::tei:TEI
+    let $borrowing-events := $cards//tei:ab[@ana = '#borrowingEvent']
+    return
+    <table class="table">
+        <tr>
+            <th>checked out</th>
+            <th>item</th>
+            <th>returned</th>
+        </tr>
+        {
+        for $e in $borrowing-events
+        let $checked-out := $e/tei:date[@ana='#checkedOut']
+        let $item := $e//tei:bibl[@ana='#borrowedItem']
+        let $itemid := $item/@corresp
+        let $item-title :=
+            if ($itemid) then
+              doc('/db/mep-data/borrowed-titles.xml')//row[titleid=$itemid][1]/regularized_title
+            else $e//tei:bibl[@ana='#borrowedItem']/tei:title
+        let $returned := $e/tei:date[@ana='#returned']
+        return
+          <tr>
+            <td>{ if ($checked-out) then xs:string($checked-out/@when) else () }</td>
+            <td>{ if ($itemid) then <a href="book.html?id={$itemid}">{$item-title }</a> else $item-title }</td>
+            <td>{ if ($returned) then xs:string($returned/@when) else () }</td>
+          </tr>
+        }
+    </table>
+};
+
+
+declare %templates:wrap function app:books($node as node(), $model as map(*))
+{
+    let $source := doc('/db/mep-data/borrowed-titles.xml')
+    let $bookids := distinct-values($source//titleid)
+    let $books :=
+        for $id in $bookids return 
+             $source//row[titleid=$id][1]
+    return map { "books" : $books }
+};
+
+declare %templates:wrap function app:book-list($node as node(), $model as map(*))
+{
+    <ul> {
+    for $book in $model('books')
+    return <li><a href="book.html?id={$book/titleid}">{ $book/regularized_title }</a></li>
+    } </ul>
+};
+
+declare %templates:wrap function app:selected-book($node as node(), $model as map(*), $id as xs:string)
+{
+    map { 'selected-book' : doc('/db/mep-data/borrowed-titles.xml')//row[titleid=$id][1] }
+};
+
+declare %templates:wrap function app:selected-book-title($node as node(), $model as map(*), $id as xs:string)
+{
+    $model('selected-book')/regularized_title/text()
+};
+
+declare %templates:wrap function app:book-borrowing-events($node as node(), $model as map(*), $id as xs:string)
+{
+    let $bookid := xs:string($model('selected-book')/titleid)
+    let $events := collection($config:data-root)//tei:ab[@ana="#borrowingEvent"][tei:bibl/@corresp = $bookid]
+    for $event in $events
+        let $checkedOut := $event/tei:date[@ana='#checkedOut']
+        let $checkedOutLabel :=
+            if ($checkedOut/@when)
+                then if (matches($checkedOut/@when, '^1900')) then 'undetermined'
+                else xs:string($checkedOut/@when)
+            else if ($checkedOut/@not-before)
+                then "not before " || xs:string($checkedOut/@not-before)
+            else if ($checkedOut/@not-after)
+                then "not after " || xs:string($checkedOut/@not-after)
+            else xs:string($checkedOut)
+        let $returned   := $event/tei:date[@ana='#returned']
+        let $returnedLabel :=
+            if ($returned/@when)
+                then if (matches($returned/@when, '^1900')) then 'undetermined'
+                else xs:string($returned/@when)
+            else if ($returned/@not-before)
+                then "not before " || xs:string($returned/@not-before)
+            else if ($returned/@not-after)
+                then "not after " || xs:string($returned/@not-after)
+            else xs:string($returned)
+        
+        
+        let $borrower   := $event/ancestor::tei:TEI//tei:particDesc/tei:person[@role = 'cardholder']
+        order by $checkedOutLabel
+        return
+         <tr>
+            <td><a href="member.html?id={substring-after($borrower/@ana, '#')}">{ xs:string($borrower) }</a></td>
+            <td>{ $checkedOutLabel }</td>
+            <td>{ $returnedLabel }</td>
+         </tr>
+};
+
+declare
+  %rest:GET
+  %rest:path('mep/subscribers')
+function app:subscribers()
+{
+    <persons>
+    { app:_subscribers() }
+    </persons>
+};
+
+declare function local:duration($event)
+{
+    let $event-duration := $event//tei:measure[@type='duration']
+    let $unit := $event-duration/@unit
+    let $quantity :=  $event-duration/@quantity
+    return
+    switch($unit)
+        case "month" return xs:yearMonthDuration(concat('P', $quantity, 'M'))
+        case "year" return xs:yearMonthDuration(concat('P', $quantity, 'Y'))
+        case "day" return xs:dayTimeDuration(concat('P', $quantity, 'D'))
+        default return error((), "invalid duration unit")
+};
+
+declare function local:subscriptions()
+{
+
+for $event in collection('/db/mep-data/transcriptions/logbooks')//tei:event[(@type = 'subscription' or @type='renewal') and exists(.//tei:measure[@type='duration'])]
+let $start := $event/ancestor::tei:div[@type = 'day'][1]/tei:head/tei:date/@when-iso
+let $duration := local:duration($event)
+return
+        <subscription subscriber = "{$event//tei:persName/@ref}"
+        start="{$start}" end="{xs:date($start) + $duration}">
+        </subscription>
+};

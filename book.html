@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <div data-template="app:selected-book">
+        <header>
+            <h1 data-template="app:selected-book-title">Book Name</h1>
+        </header>
+        <p>Lorem ipsum.</p>
+        <div>
+            <header>
+                <h2>Borrowers</h2>
+            </header>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>borrower</th>
+                        <th>checked out</th>
+                        <th>returned</th>
+                    </tr>
+                </thead>
+                <tbody data-template="app:book-borrowing-events">
+                    <tr>
+                        <td>foo</td>
+                        <td>foo</td>
+                        <td>foo</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</article>

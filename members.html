@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content" class="container-fluid">
+    <header>
+        <h1>Membership in the Lending Library</h1>
+    </header>
+    <div class="row">
+        <article class="col-xs-12 col-md-8">
+            <p>To recreate the world of the Lost Generation, MEP analyzes the information contained
+                in two sets of documents in the Sylvia Beach Papers: lending library cards and
+                logbooks.</p>
+            <p>From these documents, we can learn what the members of the lending library read and
+                where they lived; we can also learn about how the library’s membership changed from
+                the end of World War I to the beginning of World War II. The documents thus present
+                a portrait of the community memorialized in countless memoirs, films, and
+                non-fiction books: from Gertrude Stein’s The Autobiography of Alice B. Toklas (1933)
+                to Ernest Hemingway’s A Moveable Feast (1964), and from Noel Riley Fitch’s Sylvia
+                Beach and the Lost Generation (1985) to Woody Allen’s Midnight in Paris (2011).</p>
+            <p>So far, the MEP team has transcribed and encoded the logbooks from the opening of
+                Shakespeare and Company on November 19, 1919 through the end of 1927. The data from
+                these eight plus years reveal the library’s steady growth—and suggest the beginning
+                of its decline, well before the Great Depression and the exodus of American
+                expatriates from Paris. The numbers also reveal the library’s seasonal rhythms:
+                membership peaks in the late fall and early winter, and falls off in the summer.</p>
+            <h2>Active Subscribers</h2>
+            <div id="active-subscriptions-chart"/>
+            <div data-template="app:active-subscriptions-chart">
+                <p>script goes here</p>
+            </div>
+        </article>
+        <nav class="col-xs-6 col-md-4" data-template="app:subscribers">
+            <header>
+                <h2>Subscribers</h2>
+            </header>
+            <ol data-template="app:subscriber-list">
+                <li>
+                    <a href="member.html?id=hemi.er">Earnest Hemingway</a>
+                </li>
+                <li>
+                    <a href="member.html?id=benj.wa">Walter Benjamin</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <script type="text/javascript">
+        google.charts.load('current', {packages:["corechart", "calendar"]});
+        
+        // Callback that draws active subscribers chart
+        google.charts.setOnLoadCallback(activeSubscribersChart);        
+        
+        function activeSubscribersChart() {
+        
+        var sub_data = new google.visualization.DataTable();
+        sub_data.addColumn('date', 'date');
+        sub_data.addColumn('number', 'subscribers');
+        
+        for (c=1; c&lt;ACTIVESUBDATA.length; c++) {
+        sub_data.addRow([ new Date(ACTIVESUBDATA[c].date), ACTIVESUBDATA[c].count ])
+        }
+        
+        var options = {
+        title: 'Active Subscriptions'
+        };
+        
+        var sub_chart = new google.visualization.ColumnChart(document.getElementById('active-subscriptions-chart'));
+        sub_chart.draw(sub_data, options);        
+        
+        }
+    </script>
+</section>
