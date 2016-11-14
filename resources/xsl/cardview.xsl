@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:local="http://mep.princeton.edu" version="2.0" exclude-result-prefixes="xs xd">
+<xsl:stylesheet xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:local="http://mep.princeton.edu" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" exclude-result-prefixes="xs xd">
     <xsl:output method="html" doctype-system="about:legacy-compat"/>
     <xd:doc scope="stylesheet">
         <xd:desc>
@@ -107,14 +107,18 @@
         </span>
     </xsl:template>
     <xsl:template match="tei:bibl">
-        <span class="bibl">
-            <xsl:apply-templates/>
-        </span>
+        <td>
+            <span class="bibl">
+                <xsl:apply-templates/>
+            </span>
+        </td>
     </xsl:template>
     <xsl:template match="tei:title">
-        <span class="title">
-            <xsl:apply-templates/>
-        </span>
+        <a href="book.html?id={ancestor::tei:bibl/@corresp}">
+            <span class="title">
+                <xsl:apply-templates/>
+            </span>
+        </a>
     </xsl:template>
     <xsl:template match="tei:date">
         <span class="date">
@@ -130,5 +134,22 @@
         <span class="persName">
             <xsl:apply-templates/>
         </span>
+    </xsl:template>
+    <xsl:template match="tei:ab[@ana='#borrowingEvent']">
+        <table class="table">
+            <tr>
+                <xsl:apply-templates/>
+            </tr>
+        </table>
+    </xsl:template>
+    <xsl:template match="tei:date[@ana='#checkedOut']">
+        <td>
+            <xsl:apply-templates/>
+        </td>
+    </xsl:template>
+    <xsl:template match="tei:date[@ana='#returned']">
+        <td>
+            <xsl:apply-templates/>
+        </td>
     </xsl:template>
 </xsl:stylesheet>

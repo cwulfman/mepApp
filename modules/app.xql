@@ -107,6 +107,22 @@ declare %templates:wrap function app:current-card($node as node(), $model as map
         else ()
 };
 
+declare %templates:wrap function app:current-card2($node as node(), $model as map(*), $id as xs:string?)
+{
+    let $key  := 
+        if ($id) then "#"||$id
+        else ""
+        
+    let $card :=
+        if ($key) then
+            collection($config:data-root)//tei:TEI[tei:teiHeader//tei:particDesc/tei:person/@ana = $key]
+        else ()
+    return
+        if ($card) then
+            map { "current-card" : $card }
+        else ()
+};
+
 declare %templates:wrap function app:cardholders($node as node(), $model as map(*))
 {
     <ul> {
