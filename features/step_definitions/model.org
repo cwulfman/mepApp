@@ -1,0 +1,76 @@
+* LLLM
+  Lending Library Member class.
+
+** Properties
+   - Id
+   - name +
+   - gender ?
+   - nationality +
+   - residence *
+   - subscription +
+   - library_card ?
+   - sameAs *
+
+
+* Event
+  Famously tricky to model well. MEP tracks two kinds of events:
+  - borrowing events
+  - subscription events
+
+* Subscription
+  Subscription class. A subscription is a type of event.
+
+** Properties
+   - start date
+   - duration
+   - frequency
+   - price
+   - deposit
+
+* Other Subscription-Related Events
+  The logbooks contain other subscription-related events:
+  - renewal
+  - supplement
+  - reimbursement
+
+* Residence
+  As distinct from an address; not all the addresses on the cards are
+  places where the LLM lived; some are P.O. boxes; forwarding
+  addresses.  The Personography records residences:
+
+** Properties
+   - date span?
+   - address
+   - geo
+
+* Borrowed_Item
+  The Borrowed_Item class. Borrowed items could be books or magazines
+  (MEP makes no distinction). MEP subsumes all volumes of 
+  multi-volume works into a single title; all issues of a periodical
+  into a single title.
+
+** Properties
+   - id
+   - title
+   - author?
+
+* Date
+  A class that supports dates of varying exactitude. It may have 
+  a single value (when) or a range, specified by an appropriate
+  grouping of notBefore and notAfter
+
+
+* Date Span
+
+** Properties
+   - begin
+   - end
+
+
+
+* Primary Source Document
+
+** Properties
+   - id
+   - class (may a document belong to more than one?)
+   - representation
